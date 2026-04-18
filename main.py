@@ -72,11 +72,25 @@ if __name__ == '__main__':
 
     """
     То что тут много едениц и везде еденицы-это норм.
-    Это происходит из-за датасета Wine. эта штука дает члишком чистые данные
+    Это происходит из-за датасета Wine. эта штука дает cлишком чистые данные
     """
 
     #График точности
     analysis.graf(['RandomForest', 'LogisticRegression', 'RF balanced'],
                   [acc_rf, acc_lr, acc_bal])
+
+    #________Шаг 2________
+    print("SMOTE трансформация")
+    X_resampled, y_resampled=code.smote(X_train, y_train)
+    new_models = Models(X_resampled, X_test, y_resampled, y_test)
+    acc_rf = new_models.rf_model()
+    print("\nПолный отчёт:")
+    print(classification_report(y_test, new_models.y_rf_pred, target_names=target_names, digits=4))
+    analysis.confusion_matrix(y_test, new_models.y_rf_pred, "new_RandomForest", target_names)
+    new_macro_f1_rf = f1_score(y_test, new_models.y_rf_pred, average='macro')
+    print(f"\nMacro avg F1-score:")
+    print(f"   New_RandomForest:          {new_macro_f1_rf:.4f}")
+    print(f"   Разница RandomForest:          {macro_f1_rf-new_macro_f1_rf:.4f}")
+    analysis.learning_curve(new_models.rf_model_obj, X_train, y_train, title="Learning Curve")
 
     print("\n♡‧₊˚✧Готово!✧˚₊‧♡")

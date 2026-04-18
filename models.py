@@ -12,14 +12,17 @@ class Models:
         self.y_rf_pred = None
         self.y_rf_bal_pred = None
         self.y_lr_pred = None
+        self.rf_model_obj = None
+        self.rf_bal_model_obj = None
+        self.lr_model_obj = None
 
     def rf_model(self):
         print("RandomForestClassifier модель (по умолчанию)")
-        rf_classifier = RandomForestClassifier(random_state=42)
-        rf_classifier.fit(self.X_train, self.y_train)
+        self.rf_model_obj = RandomForestClassifier(random_state=42)
+        self.rf_model_obj.fit(self.X_train, self.y_train)
 
-        y_train_pred = rf_classifier.predict(self.X_train)
-        self.y_rf_pred = rf_classifier.predict(self.X_test)
+        y_train_pred = self.rf_model_obj.predict(self.X_train)
+        self.y_rf_pred = self.rf_model_obj.predict(self.X_test)
 
         accuracy_train = accuracy_score(self.y_train, y_train_pred)
         accuracy_test = accuracy_score(self.y_test, self.y_rf_pred)
@@ -29,14 +32,13 @@ class Models:
         print("\nТЕСТОВАЯ ВЫБОРКА:")
         print(f"  Accuracy:  {accuracy_test:.4f}")
         return accuracy_test
-
     def rf_balanced_model(self):
         print("RandomForestClassifier модель (class_weight='balanced')")
-        rf_bal = RandomForestClassifier(class_weight='balanced', random_state=42)
-        rf_bal.fit(self.X_train, self.y_train)
+        self.rf_bal_model_obj = RandomForestClassifier(class_weight='balanced', random_state=42)
+        self.rf_bal_model_obj.fit(self.X_train, self.y_train)
 
-        y_train_pred = rf_bal.predict(self.X_train)
-        self.y_rf_bal_pred = rf_bal.predict(self.X_test)
+        y_train_pred = self.rf_bal_model_obj.predict(self.X_train)
+        self.y_rf_bal_pred = self.rf_bal_model_obj.predict(self.X_test)
 
         accuracy_train = accuracy_score(self.y_train, y_train_pred)
         accuracy_test = accuracy_score(self.y_test, self.y_rf_bal_pred)
@@ -49,9 +51,9 @@ class Models:
 
     def logisticRegression_model(self):
         print("LogisticRegression модель")
-        scaler = StandardScaler()
-        X_train_scaled =scaler.fit_transform(self.X_train)
-        X_test_scaled =scaler.transform(self.X_test)
+        self.lr_model_obj= StandardScaler()
+        X_train_scaled =self.lr_model_obj.fit_transform(self.X_train)
+        X_test_scaled =self.lr_model_obj.transform(self.X_test)
 
         model = LogisticRegression(max_iter=1000, random_state=42)
         model.fit(X_train_scaled, self.y_train)
