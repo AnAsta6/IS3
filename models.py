@@ -51,9 +51,9 @@ class Models:
 
     def logisticRegression_model(self):
         print("LogisticRegression модель")
-        self.lr_model_obj= StandardScaler()
-        X_train_scaled =self.lr_model_obj.fit_transform(self.X_train)
-        X_test_scaled =self.lr_model_obj.transform(self.X_test)
+        scaler= StandardScaler()
+        X_train_scaled =scaler.fit_transform(self.X_train)
+        X_test_scaled =scaler.transform(self.X_test)
 
         model = LogisticRegression(max_iter=1000, random_state=42)
         model.fit(X_train_scaled, self.y_train)

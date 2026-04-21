@@ -1,6 +1,9 @@
+from scipy._lib.cobyqa import settings
+
 from code import code
 from models import Models
 from analysis import analysis
+from comp_setting import setting
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, f1_score
 import pandas as pd
@@ -91,6 +94,30 @@ if __name__ == '__main__':
     print(f"\nMacro avg F1-score:")
     print(f"   New_RandomForest:          {new_macro_f1_rf:.4f}")
     print(f"   Разница RandomForest:          {macro_f1_rf-new_macro_f1_rf:.4f}")
-    analysis.learning_curve(new_models.rf_model_obj, X_train, y_train, title="Learning Curve")
+    analysis.learning_curve(new_models.rf_model_obj, X_resampled, y_resampled, title="Learning Curve")
+
+    #________Шаг 3________
+    print("Компликсная настройка")
+    pipeline = setting.create_pipeline()
+    grid_search =setting.grid_search(pipeline,X_train, y_train)
+    print("GridSearchCV")
+    print("Лучшие параметры:", grid_search.best_params_)
+    print("Лучший Macro-F1 на валидации:", grid_search.best_score_)
+    final_y_pred = grid_search.predict(X_test)
+    final_macro_f1 = f1_score(y_test, final_y_pred, average='macro')
+    results = {
+        'Шаг': [
+            'Базовая модель (практика 3)',
+            '+ SMOTE / class_weight',
+            '+ GridSearchCV (Pipeline)'
+        ],
+        'Макро-F1 (test)': [
+            macro_f1_rf,
+            new_macro_f1_rf,
+            final_macro_f1
+        ]
+    }
+    df_results = pd.DataFrame(results)
+    print(df_results.to_string(index=False))
 
     print("\n♡‧₊˚✧Готово!✧˚₊‧♡")
